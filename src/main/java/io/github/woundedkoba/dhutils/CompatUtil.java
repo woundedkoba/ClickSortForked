@@ -6,7 +6,7 @@ public class CompatUtil {
 	public static int GetMinecraftSubVersion() {
         String minecraftVersion = Bukkit.getServer().getBukkitVersion().split("-")[0];
         String[] versionParts = minecraftVersion.split("\\.");
-
+        
         if (versionParts.length < 2) {
             // Handle the case where the version format is unexpected
             return 0; // Or any default value you prefer

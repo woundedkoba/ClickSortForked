@@ -41,6 +41,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import io.github.woundedkoba.clicksort.util.LocalUtil;
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -212,8 +214,10 @@ public class ClickSortPlugin extends JavaPlugin implements Listener {
         }
 
         boolean shouldSort = switch (clickMethod) {
-            case SINGLE -> event.getClick() == ClickType.LEFT && event.getCurrentItem().getType() == Material.AIR && (
-                    event.getCursor() == null || event.getCursor().getType() == Material.AIR);
+            case SINGLE -> {
+                if (event.getClick() != ClickType.LEFT || event.getCurrentItem().getType() != Material.AIR) yield false;
+                yield event.getCursor().getType() == Material.AIR;
+            }
             case DOUBLE -> event.getClick() == ClickType.DOUBLE_CLICK;
             case MIDDLE -> event.getClick() == ClickType.MIDDLE;
             case SWAP -> event.getClick() == ClickType.SWAP_OFFHAND;
@@ -221,9 +225,7 @@ public class ClickSortPlugin extends JavaPlugin implements Listener {
         };
         if (shouldSort && shouldSort(viewToClickedInventory(event.getView(), event.getRawSlot()))) {
             if (sortInventory(event, sortMethod) && clickMethod.shouldCancelEvent()) {
-                Bukkit.getScheduler().runTaskLater(this, () -> {
-                    player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
-                }, 1L);
+                Bukkit.getScheduler().runTaskLater(this, () -> player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand()), 1L);
                 event.setCancelled(true);
             }
         }
@@ -248,7 +250,7 @@ public class ClickSortPlugin extends JavaPlugin implements Listener {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         try {
             return cmds.dispatch(sender, command, label, args);
         } catch (DHUtilsException e) {
@@ -258,7 +260,7 @@ public class ClickSortPlugin extends JavaPlugin implements Listener {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         return cmds.onTabComplete(sender, command, label, args);
     }
 
@@ -362,7 +364,7 @@ public class ClickSortPlugin extends JavaPlugin implements Listener {
 
         for (int i : sortableSlots) {
             if (!sortedItems.isEmpty()) {
-                ItemStack newItem = sortedItems.remove(0);
+                ItemStack newItem = sortedItems.removeFirst();
                 inv.setItem(i, newItem);
             } else {
                 inv.clear(i);

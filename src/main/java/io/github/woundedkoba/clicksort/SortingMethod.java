@@ -40,19 +40,21 @@ public enum SortingMethod {
     }
 
     public String makeSortPrefix(ItemStack stack) {
-        switch (this) {
-            case NAME:
+        return switch (this) {
+            case NAME -> {
                 String name = ItemNames.lookup(stack);
-                return name == null ? null : name.replaceAll("\u00a7.", "");
-            case GROUP:
+                yield name == null ? null : name.replaceAll("§.", "");
+            }
+            case GROUP -> {
                 String grp = ClickSortPlugin.getInstance().getItemGrouping().getGroup(stack);
-                return String.format("%s-%s", grp, stack.getType());
-            case VALUE:
+                yield String.format("%s-%s", grp, stack.getType());
+            }
+            case VALUE -> {
                 double value = ClickSortPlugin.getInstance().getItemValues().getValue(stack);
-                return String.format("%08.2f", value);
-            default:
-                return "";
-        }
+                yield String.format("%08.2f", value);
+            }
+            default -> "";
+        };
     }
 
     public static SortingMethod preferredDefault() {

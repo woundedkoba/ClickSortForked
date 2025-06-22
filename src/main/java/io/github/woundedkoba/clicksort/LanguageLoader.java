@@ -65,12 +65,8 @@ public class LanguageLoader {
     }
 
     private static String getColoredString(String str) {
-        if (str == null) {
-            return null;
-        }
-        // De-serialize the string with '&' as the color code character
+        if (str == null) return null;
         Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(str);
-        // Serialize the component back to a legacy string using the standard color code character
         return LegacyComponentSerializer.legacySection().serialize(component);
     }
 }

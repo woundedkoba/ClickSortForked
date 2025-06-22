@@ -15,7 +15,7 @@ public class ConfigurationManager {
     private final Plugin plugin;
     private final Configuration config;
     private final Configuration descConfig;
-    private final Map<String, Class<?>> forceTypes = new HashMap<String, Class<?>>();
+    private final Map<String, Class<?>> forceTypes = new HashMap<>();
 
     private ConfigurationListener listener;
     private String prefix;
@@ -92,10 +92,10 @@ public class ConfigurationManager {
             return forceTypes.get(key);
         } else {
             key = addPrefix(key);
-            if (config.getDefaults().contains(key)) {
-                return config.getDefaults().get(key).getClass();
+            if (Objects.requireNonNull(config.getDefaults()).contains(key)) {
+                return Objects.requireNonNull(config.getDefaults().get(key)).getClass();
             } else if (config.contains(key)) {
-                return config.get(key).getClass();
+                return Objects.requireNonNull(config.get(key)).getClass();
             } else {
                 throw new IllegalArgumentException(
                         "can't determine type for unknown key '" + key + "'");
@@ -109,7 +109,7 @@ public class ConfigurationManager {
             throw new DHUtilsException("Config item already exists: " + keyPrefixed);
         }
         config.addDefault(keyPrefixed, def);
-        config.getDefaults().set(key, def);
+        Objects.requireNonNull(config.getDefaults()).set(key, def);
     }
 
     public Object get(String key) {
@@ -191,7 +191,7 @@ public class ConfigurationManager {
         if (val == null) {
             processedVal = null;
         } else if (List.class.isAssignableFrom(c)) {
-            List<String> list = new ArrayList<String>(1);
+            List<String> list = new ArrayList<>(1);
             list.add(val);
             processedVal = handleListValue(key, list);
         } else if (String.class.isAssignableFrom(c)) {
@@ -234,11 +234,7 @@ public class ConfigurationManager {
             } catch (NoSuchMethodException e) {
                 throw new DHUtilsException("Cannot convert '" + val + "' into a "
                         + c.getName());
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
                 if (e.getCause() instanceof NumberFormatException) {
@@ -265,7 +261,7 @@ public class ConfigurationManager {
     @SuppressWarnings("unchecked")
     private <T> void setItem(String key, List<T> list) {
         String keyPrefixed = addPrefix(key);
-        if (config.getDefaults().get(keyPrefixed) == null) {
+        if (Objects.requireNonNull(config.getDefaults()).get(keyPrefixed) == null) {
             throw new DHUtilsException("No such key '" + key + "'");
         }
         if (!(config.getDefaults().get(keyPrefixed) instanceof List<?>)) {
@@ -281,25 +277,25 @@ public class ConfigurationManager {
 
     @SuppressWarnings("unchecked")
     private <T> List<T> handleListValue(String key, List<T> list) {
-        HashSet<T> current = new HashSet<T>((List<T>) config.getList(addPrefix(key)));
+        HashSet<T> current = new HashSet<>((List<T>) Objects.requireNonNull(config.getList(addPrefix(key))));
 
-        if (list.get(0).equals("-")) {
+        if (list.getFirst().equals("-")) {
             // remove specified item from list
-            list.remove(0);
-            current.removeAll(list);
-        } else if (list.get(0).equals("=")) {
+            list.removeFirst();
+            list.forEach(current::remove); //current.removeAll(list);
+        } else if (list.getFirst().equals("=")) {
             // replace list
-            list.remove(0);
-            current = new HashSet<T>(list);
-        } else if (list.get(0).equals("+")) {
+            list.removeFirst();
+            current = new HashSet<>(list);
+        } else if (list.getFirst().equals("+")) {
             // append to list
-            list.remove(0);
+            list.removeFirst();
             current.addAll(list);
         } else {
             // append to list
             current.addAll(list);
         }
 
-        return new ArrayList<T>(current);
+        return new ArrayList<>(current);
     }
 }

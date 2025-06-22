@@ -47,6 +47,7 @@ public final class LocalUtil {
         if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
         	Component displayName = i.getItemMeta().displayName();
         	/// Convert Component to String
+            assert displayName != null;
             return Component.text().content(displayName.toString()).toString();
         }
         return getItemName(getItemType(i));

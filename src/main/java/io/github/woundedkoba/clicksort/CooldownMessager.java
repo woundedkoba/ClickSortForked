@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CooldownMessager {
-    private final Map<String, Long> cooldowns = new HashMap<String, Long>();
+    private final Map<String, Long> cooldowns = new HashMap<>();
 
     public void message(CommandSender sender, String cooldown, int secs, String message) {
         long last = getLast(sender, cooldown);

@@ -1,14 +1,16 @@
 name: ClickSortForked
 main: io.github.woundedkoba.clicksort.ClickSortPlugin
+author: WoundedKoba
+version: 0.0.2
+description: Super-convenient inventory sorting
+website: https://github.com/woundedkoba/ClickSortForked
+softdepend: [ Essentials, StackableItems ]
+api-version: 1.21.5
+
 pre_fork_main: me.desht.clicksort.ClickSortPlugin
 pre_fork_authors: [ desht, chengzi ]
-pre_fork_version: "1.6.1"
-author: WoundedKoba
-version: 0.0.1-SNAPSHOT
-description: Super-convenient inventory sorting
-website: https://dev.bukkit.org/projects/clicksort
-softdepend: [ Essentials, StackableItems ]
-api-version: 1.21
+pre_fork_version: 1.6.1
+pre_fork_website: https://dev.bukkit.org/projects/clicksort
 
 commands:
   clicksort:

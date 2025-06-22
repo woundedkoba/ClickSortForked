@@ -1,19 +1,17 @@
 package io.github.woundedkoba.dhutils;
 
-/**
- * Programmer: Jacob Scott
- * Program Name: Str
- * Description:
- * Date: Mar 31, 2011
- */
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
  * @author jacob
+ * Programmer: Jacob Scott
+ * Program Name: Str
+ * Description:
+ * Date: Mar 31, 2011
  */
+
 public class Str extends OutputStream {
 
     protected StringBuilder text = new StringBuilder();
@@ -249,31 +247,27 @@ public class Str extends OutputStream {
     }
 
     public static String strWordWrap(String str, int width, int tab, char tabChar) {
-        String ret = "";
-        while (str.length() > 0) {
+        StringBuilder ret = new StringBuilder();
+        while (!str.isEmpty()) {
             // find last char of first line
             if (str.length() <= width) {
-                return (ret.length() > 0 ? ret + "\n" + Str.repeat(tabChar, tab) : "")
+                return ((!ret.isEmpty()) ? ret + "\n" + Str.repeat(tabChar, tab) : "")
                         .concat(str);
             }
             String line1 = strTrim(str, width);
             int lastPos = line1.length()
-                    - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                    - ((!ret.isEmpty()) && line1.length() > tab + 1 ? tab + 1 : 1);
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
                 lastPos = line1.length()
-                        - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                        - ((!ret.isEmpty()) && line1.length() > tab + 1 ? tab + 1 : 1);
             }
-            // ret += strPadRightChat((ret.length() > 0 ?
-            // unformattedStrRepeat(tabChar, tab) : "") + str.substring(0,
-            // lastPos));
-            ret += (ret.length() > 0 ? "\n" + Str.repeat(tabChar, tab) : "")
-                    + str.substring(0, lastPos);
+            ret.append((!ret.isEmpty()) ? "\n" + Str.repeat(tabChar, tab) : "").append(str, 0, lastPos);
             str = str.substring(lastPos + 1);
         }
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -286,29 +280,28 @@ public class Str extends OutputStream {
      * @return right-aligned string
      */
     public static String strWordWrapRight(String str, int width, int tab, char tabChar) {
-        String ret = "";
-        while (str.length() > 0) {
+        StringBuilder ret = new StringBuilder();
+        while (!str.isEmpty()) {
             // find last char of first line
             if (str.length() <= width) {
-                return (ret.length() > 0 ? ret + "\n" : "").concat(Str.padLeft(str,
+                return ((!ret.isEmpty()) ? ret + "\n" : "").concat(Str.padLeft(str,
                         width, tabChar));
             }
             String line1 = strTrim(str, width);
             int lastPos = line1.length()
-                    - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                    - ((!ret.isEmpty()) && line1.length() > tab + 1 ? tab + 1 : 1);
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos <= 0) {
                 lastPos = line1.length()
-                        - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                        - ((!ret.isEmpty()) && line1.length() > tab + 1 ? tab + 1 : 1);
             }
             // ret += strPadLeftChat(str.substring(0, lastPos), tabChar);
-            ret += (ret.length() > 0 ? "\n" : "")
-                    + Str.padLeft(str.substring(0, lastPos), width, tabChar);
+            ret.append((!ret.isEmpty()) ? "\n" : "").append(Str.padLeft(str.substring(0, lastPos), width, tabChar));
             str = str.substring(lastPos + 1);
         }
-        return ret;
+        return ret.toString();
     }
 
     public static String strWordWrapRight(String str, int width, int tab) {
@@ -341,22 +334,22 @@ public class Str extends OutputStream {
     public static String strTrim(String str, int length) {
         if (str.length() > length) {
             int width = length;
-            String ret = "";
+            StringBuilder ret = new StringBuilder();
             boolean lastCol = false;
             for (char c : str.toCharArray()) {
-                if (c == '\u00A7') {
-                    ret += c;
+                if (c == '§') {
+                    ret.append(c);
                     lastCol = true;
                 } else {
                     if (!lastCol) {
                         if (width - 1 >= 0) {
                             width -= 1;
-                            ret += c;
+                            ret.append(c);
                         } else {
-                            return ret;
+                            return ret.toString();
                         }
                     } else {
-                        ret += c;
+                        ret.append(c);
                         lastCol = false;
                     }
                 }

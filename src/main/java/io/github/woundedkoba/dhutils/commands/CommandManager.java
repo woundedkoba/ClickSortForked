@@ -14,7 +14,7 @@ import java.util.*;
 public class CommandManager {
     private static final List<String> EMPTY_STRING_LIST = Collections.emptyList();
 
-    private final List<AbstractCommand> cmdList = new ArrayList<AbstractCommand>();
+    private final List<AbstractCommand> cmdList = new ArrayList<>();
     private final JavaPlugin plugin;
 
     public CommandManager(JavaPlugin plugin) {
@@ -56,7 +56,7 @@ public class CommandManager {
 
         if (possibleMatches.size() == 1) {
             // good - a unique match
-            AbstractCommand cmd = possibleMatches.get(0);
+            AbstractCommand cmd = possibleMatches.getFirst();
             if (cmd.matchesArgCount(cmdName, args)) {
                 if (cmd.getPermissionNode() != null) {
                     PermissionUtils.requirePerms(sender, cmd.getPermissionNode());
@@ -65,20 +65,20 @@ public class CommandManager {
             } else {
                 cmd.showUsage(sender, label);
             }
-        } else if (possibleMatches.size() == 0) {
+        } else if (possibleMatches.isEmpty()) {
             // no match
             String s = cmdList.size() == 1 ? "" : "s";
             MiscUtil.errorMessage(sender, cmdList.size() + " possible matching command"
                     + s + " in " + desc + ":");
             for (AbstractCommand cmd : MiscUtil.asSortedList(cmdList)) {
-                cmd.showUsage(sender, label, "\u2022 ");
+                cmd.showUsage(sender, label, "• ");
             }
         } else {
             // multiple possible matches
             MiscUtil.errorMessage(sender, possibleMatches.size()
                     + " possible matching commands in " + desc + ":");
             for (AbstractCommand cmd : MiscUtil.asSortedList(possibleMatches)) {
-                cmd.showUsage(sender, label, "\u2022 ");
+                cmd.showUsage(sender, label, "• ");
             }
         }
         return res;
@@ -103,17 +103,17 @@ public class CommandManager {
         List<AbstractCommand> possibleMatches = getPossibleMatches(command.getName(),
                 args, true);
 
-        if (possibleMatches.size() == 0) {
+        if (possibleMatches.isEmpty()) {
             return noCompletions(sender);
         } else if (possibleMatches.size() == 1
-                && args.length > possibleMatches.get(0).getMatchedCommand().size()) {
+                && args.length > possibleMatches.getFirst().getMatchedCommand().size()) {
             // tab completion to be done by the command itself
             Debugger.getInstance().debug(
                     "tab complete: pass to command: "
-                            + possibleMatches.get(0).getMatchedCommand());
-            int from = possibleMatches.get(0).getMatchedCommand().size();
+                            + possibleMatches.getFirst().getMatchedCommand());
+            int from = possibleMatches.getFirst().getMatchedCommand().size();
             try {
-                return possibleMatches.get(0).onTabComplete(plugin, sender,
+                return possibleMatches.getFirst().onTabComplete(plugin, sender,
                         subRange(args, from));
             } catch (DHUtilsException e) {
                 MiscUtil.errorMessage(sender, e.getMessage());
@@ -121,7 +121,7 @@ public class CommandManager {
             }
         } else {
             // tab completion done here; try to fill in the subcommand
-            Set<String> completions = new HashSet<String>();
+            Set<String> completions = new HashSet<>();
             for (AbstractCommand cmd : possibleMatches) {
                 if (cmd.getPermissionNode() != null
                         && !PermissionUtils.isAllowedTo(sender, cmd.getPermissionNode())) {
@@ -147,7 +147,7 @@ public class CommandManager {
 
     private List<AbstractCommand> getPossibleMatches(String cmdName, String[] args,
                                                      boolean partialOk) {
-        List<AbstractCommand> possibleMatches = new ArrayList<AbstractCommand>();
+        List<AbstractCommand> possibleMatches = new ArrayList<>();
 
         for (AbstractCommand cmd : cmdList) {
             if (cmd.matchesSubCommand(cmdName, args, partialOk)) {

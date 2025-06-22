@@ -28,13 +28,7 @@ public class MidiUtil {
     public static boolean playMidiQuietly(File file, float tempo, Set<Player> listeners) {
         try {
             MidiUtil.playMidi(file, tempo, listeners);
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-            return false;
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
+        } catch (MidiUnavailableException | InvalidMidiDataException | IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -45,13 +39,7 @@ public class MidiUtil {
     public static boolean playMidiQuietly(File file, float tempo, Location loc) {
         try {
             MidiUtil.playMidi(file, tempo, loc);
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-            return false;
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
+        } catch (MidiUnavailableException | InvalidMidiDataException | IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -67,12 +55,9 @@ public class MidiUtil {
             throws InvalidMidiDataException, IOException, MidiUnavailableException {
         if (sequencer == null) {
             sequencer = MidiSystem.getSequencer(false);
-            sequencer.addMetaEventListener(new MetaEventListener() {
-                @Override
-                public void meta(MetaMessage metaMsg) {
-                    if (metaMsg.getType() == 0x2F) {
-                        sequencer.close();
-                    }
+            sequencer.addMetaEventListener(metaMsg -> {
+                if (metaMsg.getType() == 0x2F) {
+                    sequencer.close();
                 }
             });
         } else if (sequencer.isOpen()) {

@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,10 +72,7 @@ public class SortKey implements Comparable<SortKey> {
     }
 
     @Override
-    public int compareTo(SortKey other) {
-        if (other == null) {
-            return 1;
-        }
+    public int compareTo(@NotNull SortKey other) {
 
         int c = this.getSortPrefix().compareTo(other.getSortPrefix());
         if (c != 0) {

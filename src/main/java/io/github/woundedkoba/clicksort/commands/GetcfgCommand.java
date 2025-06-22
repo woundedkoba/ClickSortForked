@@ -19,7 +19,9 @@ package io.github.woundedkoba.clicksort.commands;
 
 import io.github.woundedkoba.dhutils.MessagePager;
 import io.github.woundedkoba.dhutils.commands.AbstractCommand;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -36,8 +38,14 @@ public class GetcfgCommand extends AbstractCommand {
                 .setParseColours(true);
         for (String key : plugin.getConfig().getKeys(true)) {
             if (!plugin.getConfig().isConfigurationSection(key)) {
-                pager.add(NamedTextColor.WHITE + key + " = " + NamedTextColor.YELLOW
-                        + plugin.getConfig().get(key));
+                // Build a component: key (white), " = " (gray), value (yellow)
+                Component entry = Component.text()
+                        .append(Component.text(key, NamedTextColor.WHITE))
+                        .append(Component.text(" = ", NamedTextColor.GRAY))
+                        .append(Component.text(String.valueOf(plugin.getConfig().get(key)), NamedTextColor.YELLOW))
+                        .build();
+                String entryStr = LegacyComponentSerializer.legacySection().serialize(entry);
+                pager.add(entryStr);
             }
         }
         pager.showPage();

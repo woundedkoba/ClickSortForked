@@ -3,6 +3,7 @@ package io.github.woundedkoba.clicksort.events;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,7 @@ public class InventorySortEvent extends InventoryInteractEvent {
     }
 
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return sortInv;
     }
 

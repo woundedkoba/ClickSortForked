@@ -89,10 +89,8 @@ public class PlayerSortingPrefs {
     }
 
     private void setPrefs(Player player, SortPrefs prefs) {
-        jdbi.useHandle(handle -> {
-            handle.execute("insert or replace into sorting_prefs values (?, ?, ?, ?)", player.getUniqueId(),
-                    prefs.sortMethod, prefs.clickMethod, prefs.shiftClick);
-        });
+        jdbi.useHandle(handle -> handle.execute("insert or replace into sorting_prefs values (?, ?, ?, ?)", player.getUniqueId(),
+                prefs.sortMethod, prefs.clickMethod, prefs.shiftClick));
     }
 
     public void load() {

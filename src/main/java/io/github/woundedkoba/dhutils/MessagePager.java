@@ -12,7 +12,7 @@ import java.util.*;
 
 public class MessagePager {
 	public static final String BULLET = LegacyComponentSerializer.legacySection().serialize(
-	        Component.text("\u2022 ")
+	        Component.text("• ")
 	            .color(NamedTextColor.LIGHT_PURPLE)
 	    ) + "§r";
 
@@ -22,7 +22,7 @@ public class MessagePager {
     private static String pageCmd = "";
     private static int defaultPageSize = DEF_PAGE_SIZE;
 
-    private static final Map<String, MessagePager> pagers = new HashMap<String, MessagePager>();
+    private static final Map<String, MessagePager> pagers = new HashMap<>();
 
     private final List<String> messages;
     private final WeakReference<CommandSender> senderRef;
@@ -32,11 +32,11 @@ public class MessagePager {
     private boolean parseColours;
 
     public MessagePager(CommandSender sender) {
-        this.senderRef = new WeakReference<CommandSender>(sender);
+        this.senderRef = new WeakReference<>(sender);
         this.currentPage = 1;
         this.parseColours = false;
         this.pageSize = getDefaultPageSize();
-        this.messages = new ArrayList<String>();
+        this.messages = new ArrayList<>();
     }
 
     public static int getDefaultPageSize() {
@@ -171,7 +171,7 @@ public class MessagePager {
         // TODO: apply MinecraftChatStr.alignTags(lines, true)
         // in pagesize segments before adding to buffer
 
-        List<String> actual = new ArrayList<String>();
+        List<String> actual = new ArrayList<>();
         for (String l : lines) {
             Collections.addAll(actual, wrap(l));
         }
@@ -186,9 +186,7 @@ public class MessagePager {
                 messages.add("");
             }
         }
-        for (String line : actual) {
-            messages.add(line);
-        }
+        messages.addAll(actual);
     }
 
     /**
@@ -293,50 +291,61 @@ public class MessagePager {
         if (sender == null) {
             return;
         }
-        if (sender instanceof Player) {
+        if (sender instanceof Player player) {
             // pretty paged display
             if (pageNum < 1 || pageNum > getPageCount()) {
                 throw new IllegalArgumentException("Page number " + pageNum
                         + " is out of range.");
             }
 
-            Player player = (Player) sender;
-
             int i = (pageNum - 1) * getPageSize();
             int nMessages = getSize();
-            String header = String.format("\u2524 %d-%d of %d lines (page %d/%d) \u251c",
+            String headerText = String.format("┤ %d-%d of %d lines (page %d/%d) ├",
                     i + 1, Math.min(getPageSize() * pageNum, nMessages), nMessages,
                     pageNum, getPageCount());
-            MiscUtil.rawMessage(
-                    player,
-                    NamedTextColor.GREEN + "\u250c"
-                            + MinecraftChatStr.strPadCenterChat(header, 325, '\u2504'));
 
+            // Header
+            Component header = Component.text()
+                    .append(Component.text("┌", NamedTextColor.GREEN))
+                    .append(Component.text(MinecraftChatStr.strPadCenterChat(headerText, 325, '┄'), NamedTextColor.GREEN))
+                    .build();
+            player.sendMessage(header);
+
+            // Paged content
             for (; i < nMessages && i < pageNum * getPageSize(); ++i) {
-            	String messageLine = getLine(i);
-                Component messageComponent = Component.text("\u250a ")
-                        .color(NamedTextColor.GREEN)
-                        .append(Component.text(messageLine));
+                String messageLine = getLine(i);
+                Component messageComponent;
+
                 if (parseColours) {
-                    MiscUtil.generalMessage(player, LegacyComponentSerializer.legacySection().serialize(messageComponent) + "§r");
+                    // Parse legacy colors in the message content
+                    messageComponent = Component.text("┊ ", NamedTextColor.GREEN)
+                            .append(LegacyComponentSerializer.legacySection().deserialize(messageLine));
                 } else {
-                    MiscUtil.rawMessage(player, LegacyComponentSerializer.legacySection().serialize(messageComponent) + "§r");
+                    // Just show as plain text
+                    messageComponent = Component.text("┊ ", NamedTextColor.GREEN)
+                            .append(Component.text(messageLine));
                 }
+
+                player.sendMessage(messageComponent);
             }
 
-            String footer = getPageCount() > 1 ? "\u2524 Use " + pageCmd
-                    + " to see other pages \u251c" : "";
-            MiscUtil.rawMessage(
-                    player,
-                    NamedTextColor.GREEN + "\u2514"
-                            + MinecraftChatStr.strPadCenterChat(footer, 325, '\u2504'));
+            // Footer
+            String footerText = getPageCount() > 1 ? "┤ Use " + pageCmd
+                    + " to see other pages ├" : "";
+            Component footer = Component.text()
+                    .append(Component.text("└", NamedTextColor.GREEN))
+                    .append(Component.text(MinecraftChatStr.strPadCenterChat(footerText, 325, '┄'), NamedTextColor.GREEN))
+                    .build();
+            player.sendMessage(footer);
 
             setPage(pageNum);
         } else {
-            // just dump the whole message buffer to the console
+            // Just dump the whole message buffer to the console
             for (String s : messages) {
                 if (parseColours) {
-                    MiscUtil.generalMessage(sender, s);
+                    // Use legacy color parser for console if needed
+                    Component line = LegacyComponentSerializer.legacySection().deserialize(s);
+                    MiscUtil.generalMessage(sender, LegacyComponentSerializer.legacySection().serialize(line));
                 } else {
                     MiscUtil.rawMessage(sender, s);
                 }
@@ -346,8 +355,10 @@ public class MessagePager {
 
     private String[] wrap(String line) {
         CommandSender sender = senderRef.get();
-        if (sender != null && sender instanceof Player) {
-            String s = parseColours ? MiscUtil.parseColourSpec(sender, line) : line;
+        if (sender instanceof Player) {
+            String s = parseColours
+                    ? LegacyComponentSerializer.legacySection().serialize(MiscUtil.parseColourSpec(sender, line))
+                    : line;
             return ChatPaginator.wordWrap(s, getLineLength());
         } else {
             return new String[]{line};

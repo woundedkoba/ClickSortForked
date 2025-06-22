@@ -39,7 +39,7 @@ public class MinecraftChatStr {
     private static final CharacterBag bag = new CharacterBag();
 
     static {
-        final Map<Integer, String> widths = new HashMap<Integer, String>();
+        final Map<Integer, String> widths = new HashMap<>();
         widths.put(7, "@~");
         widths.put(6,
                 "#$%&+-/0123456789=?ABCDEFGHJKLMNOPQRSTUVWXYZ\\^_abcdeghjmnopqrsuvwxyzñÑáéóúü");
@@ -60,7 +60,7 @@ public class MinecraftChatStr {
     public static int getStringWidth(String s) {
         int i = 0;
         if (s != null) {
-            // s = s.replaceAll("\\u00A7.", "");
+            // s = s.replaceAll("\§.", "");
             for (int j = 0; j < s.length(); j++) {
                 if (s.charAt(j) >= 0) {
                     i += getCharWidth(s.charAt(j));
@@ -79,7 +79,7 @@ public class MinecraftChatStr {
     }
 
     public static String uncoloredStr(String s) {
-        return s != null ? s.replaceAll("\\u00A7.", "") : s;
+        return s != null ? s.replaceAll("§.", "") : s;
     }
 
     /**
@@ -187,32 +187,32 @@ public class MinecraftChatStr {
     }
 
     public static int strLen(String str) {
-        if (!str.contains("\u00A7")) {
+        if (!str.contains("§")) {
             return str.length();
         }
-        // just searching for \u00A7.
-        return str.replaceAll("\\u00A7.", "").length();
+        // Remove all '§' color/formatting codes from the string before measuring length
+        return str.replaceAll("§.", "").length();
     }
 
     public static String strTrim(String str, int length) {
         if (uncoloredStr(str).length() > length) {
             int width = length;
-            String ret = "";
+            StringBuilder ret = new StringBuilder();
             boolean lastCol = false;
             for (char c : str.toCharArray()) {
-                if (c == '\u00A7') {
-                    ret += c;
+                if (c == '§') {
+                    ret.append(c);
                     lastCol = true;
                 } else {
                     if (!lastCol) {
                         if (width - 1 >= 0) {
                             width -= 1;
-                            ret += c;
+                            ret.append(c);
                         } else {
-                            return ret;
+                            return ret.toString();
                         }
                     } else {
-                        ret += c;
+                        ret.append(c);
                         lastCol = false;
                     }
                 }
@@ -229,23 +229,23 @@ public class MinecraftChatStr {
         int width = getStringWidth(str);
         if (width > absLen) {
             width = absLen;
-            String ret = "";
+            StringBuilder ret = new StringBuilder();
             boolean lastCol = false;
             for (char c : str.toCharArray()) {
-                if (c == '\u00A7') {
-                    ret += c;
+                if (c == '§') {
+                    ret.append(c);
                     lastCol = true;
                 } else {
                     if (!lastCol) {
                         int w = getCharWidth(c);
                         if (width - w >= 0) {
                             width -= w;
-                            ret += c;
+                            ret.append(c);
                         } else {
-                            return ret;
+                            return ret.toString();
                         }
                     } else {
-                        ret += c;
+                        ret.append(c);
                         lastCol = false;
                     }
                 }
@@ -264,25 +264,21 @@ public class MinecraftChatStr {
 
     public static String strWordWrap(String str, int tab, char tabChar) {
         String ret = "";
-        while (str.length() > 0) {
+        while (!str.isEmpty()) {
             // find last char of first line
             if (getStringWidth(str) <= CHAT_WIDTH) {
-                return (ret.length() > 0 ? ret + "\n" + lastStrColor(ret)
+                return (!ret.isEmpty() ? ret + "\n" + lastStrColor(ret)
                         + Str.repeat(tabChar, tab) : "").concat(str);
             }
             String line1 = strChatTrim(str);
-            int lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+            int lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
-                lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+                lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             }
-            // ret += strPadRightChat((ret.length() > 0 ?
-            // unformattedStrRepeat(tabChar, tab) : "") + str.substring(0,
-            // lastPos));
-
-            ret += (ret.length() > 0 ? "\n" + Str.repeat(tabChar, tab)
+            ret += (!ret.isEmpty() ? "\n" + Str.repeat(tabChar, tab)
                     + lastStrColor(ret) : "")
                     + str.substring(0, lastPos);
             str = str.substring(lastPos + 1);
@@ -304,22 +300,22 @@ public class MinecraftChatStr {
      */
     public static String strWordWrapRight(String str, int tab, char tabChar) {
         String ret = "";
-        while (str.length() > 0) {
+        while (!str.isEmpty()) {
             // find last char of first line
             if (getStringWidth(str) <= CHAT_WIDTH) {
-                return (ret.length() > 0 ? ret + "\n" + lastStrColor(ret) : "")
+                return (!ret.isEmpty() ? ret + "\n" + lastStrColor(ret) : "")
                         .concat(strPadLeftChat(str, tabChar));
             }
             String line1 = strChatTrim(str);
-            int lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+            int lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
-                lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+                lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             }
             // ret += strPadLeftChat(str.substring(0, lastPos), tabChar);
-            ret += (ret.length() > 0 ? "\n" + lastStrColor(ret) : "")
+            ret += (!ret.isEmpty() ? "\n" + lastStrColor(ret) : "")
                     + strPadLeftChat(str.substring(0, lastPos), tabChar);
             str = str.substring(lastPos + 1);
         }
@@ -341,13 +337,13 @@ public class MinecraftChatStr {
         String line1 = strChatTrim(str);
         // first run the first left & right align
         if (line1.contains("" + sepChar)) {
-            int lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+            int lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             int sepPos = line1.indexOf(sepChar) + 1;
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
-                lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+                lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             } else if (sepPos > lastPos) {
                 lastPos = sepPos;
             }
@@ -356,22 +352,22 @@ public class MinecraftChatStr {
                     - getStringWidth(ret));
             str = str.substring(lastPos + 1);
         }
-        while (str.length() > 0) {
+        while (!str.isEmpty()) {
             // find last char of first line
             if (getStringWidth(str) <= CHAT_WIDTH) {
-                return (ret.length() > 0 ? ret + "\n" + lastStrColor(ret) : "")
+                return (!ret.isEmpty() ? ret + "\n" + lastStrColor(ret) : "")
                         .concat(strPadLeftChat(str, tabChar));
             }
             line1 = strChatTrim(str);
-            int lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+            int lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
-                lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+                lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             }
             // ret += strPadLeftChat(str.substring(0, lastPos), tabChar);
-            ret += (ret.length() > 0 ? "\n" + lastStrColor(ret) : "")
+            ret += (!ret.isEmpty() ? "\n" + lastStrColor(ret) : "")
                     + strPadLeftChat(str.substring(0, lastPos), tabChar);
             str = str.substring(lastPos + 1);
         }
@@ -395,14 +391,14 @@ public class MinecraftChatStr {
         String line1 = strTrim(str, width);
         // first run the first left & right align
         if (line1.contains("" + sepChar)) {
-            int lastPos = line1.length() - (ret.length() > 0 ? tab + 1 : 1);
+            int lastPos = line1.length() - (!ret.isEmpty() ? tab + 1 : 1);
             int sepPos = line1.indexOf(sepChar) + 1;
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
                 lastPos = line1.length()
-                        - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                        - (!ret.isEmpty() && line1.length() > tab + 1 ? tab + 1 : 1);
             } else if (sepPos > lastPos) {
                 lastPos = sepPos;
             }
@@ -410,24 +406,24 @@ public class MinecraftChatStr {
             ret += strPadLeftChat(str.substring(sepPos, lastPos), width - strLen(ret));
             str = str.substring(lastPos + 1);
         }
-        while (str.length() > 0) {
+        while (!str.isEmpty()) {
             // find last char of first line
             if (strLen(str) <= width) {
-                return (ret.length() > 0 ? ret + "\n" + lastStrColor(ret) : "")
+                return (!ret.isEmpty() ? ret + "\n" + lastStrColor(ret) : "")
                         .concat(Str.padLeft(str, width, tabChar));
             }
             line1 = strChatTrim(str);
             int lastPos = line1.length()
-                    - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                    - (!ret.isEmpty() && line1.length() > tab + 1 ? tab + 1 : 1);
             while (lastPos > 0 && line1.charAt(lastPos) != ' ') {
                 --lastPos;
             }
             if (lastPos == 0) {
                 lastPos = line1.length()
-                        - (ret.length() > 0 && line1.length() > tab + 1 ? tab + 1 : 1);
+                        - (!ret.isEmpty() && line1.length() > tab + 1 ? tab + 1 : 1);
             }
             // ret += strPadLeftChat(str.substring(0, lastPos), tabChar);
-            ret += (ret.length() > 0 ? "\n" + lastStrColor(ret) : "")
+            ret += (!ret.isEmpty() ? "\n" + lastStrColor(ret) : "")
                     + Str.padLeft(str.substring(0, lastPos), width, tabChar);
             str = str.substring(lastPos + 1);
         }
@@ -435,11 +431,11 @@ public class MinecraftChatStr {
     }
 
     public static String lastStrColor(String str) {
-        int i = str.lastIndexOf('\u00A7');
+        int i = str.lastIndexOf('§');
         if (i >= 0 && i + 1 < str.length()) {
             return str.substring(i, i + 2);
         }
-        return "\u00A7F";// white
+        return "§F";// white
     }
 
     private static boolean containsAlignTag(String str, String tag) {
@@ -517,7 +513,7 @@ public class MinecraftChatStr {
 
     public static LinkedList<String> alignTags(LinkedList<String> input,
                                                boolean minecraftChatFormat) {
-        if (input == null || input.size() == 0) {
+        if (input == null || input.isEmpty()) {
             return input;
         }
         char[] repl = new char[input.size()];
@@ -541,8 +537,7 @@ public class MinecraftChatStr {
                         maxPos = input.get(i).indexOf("<" + fm + ">");
                     }
                 }
-
-                LinkedList<String> newinput = new LinkedList<String>();
+                LinkedList<String> newinput = new LinkedList<>();
                 for (int i = 0; i < input.size(); ++i) {
                     String line = input.get(i);
 
@@ -593,91 +588,62 @@ public class MinecraftChatStr {
         }
         return input;
     }
-
+    /*
     public static String getNamedTextColor(String col) {
-        String def = NamedTextColor.WHITE.toString();// "\u00A70";
-        if (col == null || col.length() == 0) {
+        String def = NamedTextColor.WHITE.toString();// "§0";
+        if (col == null || col.isEmpty()) {
             return def;
-        } else if (col.length() >= 2 && col.startsWith("\u00A7")) {
+        } else if (col.length() >= 2 && col.startsWith("§")) {
             return col.substring(0, 2);
         }
         col = col.toLowerCase().trim();
         /*
-         * # &0 is black # &1 is dark blue # &2 is dark green # &3 is dark sky
-         * blue # &4 is red # &5 is magenta # &6 is gold or amber # &7 is light
-         * grey # &8 is dark grey # &9 is medium blue # &2 is light green # &b
-         * is cyan # &c is orange-red # &d is pink # &e is yellow # &f is white
+         * # §0 is black # §1 is dark blue # §2 is dark green # §3 is dark sky
+         * blue # §4 is red # §5 is magenta # §6 is gold or amber # §7 is light
+         * grey # §8 is dark grey # §9 is medium blue # §2 is light green # §b
+         * is cyan # §c is orange-red # §d is pink # §e is yellow # §f is white
          */
+    /*
         if (col.equalsIgnoreCase("black")) {
-            return NamedTextColor.BLACK.toString();// "\u00A70";
-            // //String.format("\u00A7%x",
-            // 0x0);//
+            return NamedTextColor.BLACK.toString();// "§0";
         } else if (col.equals("blue") || col.equals("dark blue")) {
-            return NamedTextColor.DARK_BLUE.toString();// "\u00A71"; //
-            // String.format("\u00A7%x",
-            // 0x1);//
+            return NamedTextColor.DARK_BLUE.toString();// "§1"; //
         } else if (col.equals("green") || col.equals("dark green")) {
-            return NamedTextColor.DARK_GREEN.toString();// "\u00A72"; //
-            // String.format("\u00A7%x",
-            // 0x2);//
+            return NamedTextColor.DARK_GREEN.toString();// "§2"; //
         } else if (col.equals("sky blue") || col.equals("dark sky blue")
                 || col.equals("aqua")) {
-            return NamedTextColor.DARK_AQUA.toString();// "\u00A73"; //
-            // String.format("\u00A7%x",
-            // 0x3);//
+            return NamedTextColor.DARK_AQUA.toString();// "§3"; //
         } else if (col.equals("red") || col.equals("dark red")) {
-            return NamedTextColor.DARK_RED.toString();// "\u00A74"; //
-            // String.format("\u00A7%x",
-            // 0x4);//
+            return NamedTextColor.DARK_RED.toString();// "§4"; //
         } else if (col.equals("magenta") || col.equals("purple")) {
-            return NamedTextColor.DARK_PURPLE.toString();// "\u00A75"; //
-            // String.format("\u00A7%x",
-            // 0x5);//
+            return NamedTextColor.DARK_PURPLE.toString();// "§5"; //
         } else if (col.equals("gold") || col.equals("amber") || col.equals("dark yellow")) {
-            return NamedTextColor.GOLD.toString();// "\u00A76"; //
-            // String.format("\u00A7%x",
-            // 0x6);//
+            return NamedTextColor.GOLD.toString();// "§6"; //
         } else if (col.equals("light gray") || col.equals("light grey")) {
-            return NamedTextColor.GRAY.toString();// "\u00A77"; //
-            // String.format("\u00A7%x",
-            // 0x7);//
+            return NamedTextColor.GRAY.toString();// "§7"; //
         } else if (col.equals("dark gray") || col.equals("dark grey") || col.equals("gray")
                 || col.equals("grey")) {
-            return NamedTextColor.DARK_GRAY.toString();// "\u00A78"; //
-            // String.format("\u00A7%x",
-            // 0x8);//
+            return NamedTextColor.DARK_GRAY.toString();// "§8"; //
         } else if (col.equals("medium blue")) {
-            return NamedTextColor.BLUE.toString();// "\u00A79"; //
-            // String.format("\u00A7%x",
-            // 0x9);//
+            return NamedTextColor.BLUE.toString();// "§9"; //
         } else if (col.equals("light green") || col.equals("lime")
                 || col.equals("lime green")) {
-            return NamedTextColor.GREEN.toString();// "\u00A7a"; //
-            // String.format("\u00A7%x",
-            // 0xA);//
+            return NamedTextColor.GREEN.toString();// "§a"; //
         } else if (col.equals("cyan") || col.equals("light blue")) {
-            return NamedTextColor.AQUA.toString();// "\u00A7b"; //
-            // String.format("\u00A7%x",
-            // 0xB);//
+            return NamedTextColor.AQUA.toString();// "§b"; //
         } else if (col.equals("orange") || col.equals("orange-red")
                 || col.equals("red-orange")) {
-            return NamedTextColor.RED.toString();// "\u00A7c"; //
-            // String.format("\u00A7%x", 0xC);//
+            return NamedTextColor.RED.toString();// "§c"; //
         } else if (col.equals("pink") || col.equals("light red")
                 || col.equals("light purple")) {
-            return NamedTextColor.LIGHT_PURPLE.toString();// "\u00A7d"; //
-            // String.format("\u00A7%x",
-            // 0xD);//
+            return NamedTextColor.LIGHT_PURPLE.toString();// "§d"; //
         } else if (col.equals("yellow")) {
-            return NamedTextColor.YELLOW.toString();// "\u00A7e"; //
-            // String.format("\u00A7%x",
-            // 0xE);//
+            return NamedTextColor.YELLOW.toString();// "§e"; //
         } else if (col.equals("white")) {
-            return NamedTextColor.WHITE.toString();// "\u00A7f";
-            // //String.format("\u00A7%x",
-            // 0xF);//
+            return NamedTextColor.WHITE.toString();// "§f";
         } else {
             return def;
         }
     }
+    */
 }

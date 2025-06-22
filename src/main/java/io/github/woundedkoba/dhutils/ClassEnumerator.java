@@ -24,6 +24,7 @@ public class ClassEnumerator {
         Debugger.getInstance().debug(2, "Reading Directory '" + directory + "'");
         // Get the list of the files contained in the package
         String[] files = directory.list();
+        assert files != null;
         for (String fileName : files) {
             String className;
             // we are only interested in .class files
@@ -46,7 +47,7 @@ public class ClassEnumerator {
                                        ArrayList<Class<?>> classes) {
         String relPath = pkgname.replace('.', '/');
         String resPath = resource.getPath();
-        String jarPath = resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst(
+        String jarPath = resPath.replaceFirst("[.]jar!.*", ".jar").replaceFirst(
                 "file:", "");
         Debugger.getInstance().debug(2, "Reading JAR file: '" + jarPath + "'");
         JarFile jarFile;
@@ -75,7 +76,7 @@ public class ClassEnumerator {
     }
 
     public static ArrayList<Class<?>> getClassesForPackage(Plugin plugin, Package pkg) {
-        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        ArrayList<Class<?>> classes = new ArrayList<>();
 
         String pkgname = pkg.getName();
         String relPath = pkgname.replace('.', '/');
@@ -90,7 +91,7 @@ public class ClassEnumerator {
                 "Package: '" + pkgname + "' becomes Resource: '" + resource
                         + "'");
 
-        resource.getPath();
+        //resource.getPath();
         if (resource.toString().startsWith("jar:")) {
             processJarfile(resource, pkgname, classes);
         } else {

@@ -34,8 +34,7 @@ public class NoteBlockReceiver implements Receiver {
 
     @Override
     public void send(MidiMessage m, long time) {
-        if (m instanceof ShortMessage) {
-            ShortMessage smessage = (ShortMessage) m;
+        if (m instanceof ShortMessage smessage) {
             switch (smessage.getCommand()) {
                 case ShortMessage.NOTE_ON:
                     this.playNote(smessage);
@@ -68,6 +67,7 @@ public class NoteBlockReceiver implements Receiver {
 
     @Override
     public void close() {
+        assert listeners != null;
         listeners.clear();
     }
 }

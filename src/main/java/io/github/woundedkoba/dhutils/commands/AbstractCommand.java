@@ -21,9 +21,9 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
     }
 
     private final int minArgs, maxArgs;
-    private final List<CommandRecord> cmdRecs = new ArrayList<AbstractCommand.CommandRecord>();
-    private final Map<String, OptType> options = new HashMap<String, OptType>();
-    private final Map<String, Object> optVals = new HashMap<String, Object>();
+    private final List<CommandRecord> cmdRecs = new ArrayList<>();
+    private final Map<String, OptType> options = new HashMap<>();
+    private final Map<String, Object> optVals = new HashMap<>();
     private String[] usage;
     private String permissionNode;
     private boolean quotedArgs;
@@ -132,7 +132,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
         }
 
         // extract any command-line options that were specified
-        List<String> l = new ArrayList<String>(tmpArgs.length);
+        List<String> l = new ArrayList<>(tmpArgs.length);
         optVals.clear();
         for (int i = 0; i < tmpArgs.length; i++) {
             String opt;
@@ -389,7 +389,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
      */
     protected List<String> filterPrefix(CommandSender sender, Collection<String> c,
                                         String prefix) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String s : c) {
             if (prefix == null || prefix.isEmpty()
                     || s.toLowerCase().startsWith(prefix.toLowerCase())) {
@@ -418,7 +418,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
     protected List<String> getEnumCompletions(CommandSender sender,
                                               Class<? extends Enum<?>> c, String prefix) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (Object o1 : c.getEnumConstants()) {
             res.add(o1.toString());
         }
@@ -427,7 +427,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
     protected List<String> getConfigCompletions(CommandSender sender,
                                                 ConfigurationSection config, String prefix) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String k : config.getKeys(true)) {
             if (!config.isConfigurationSection(k)) {
                 res.add(k);
@@ -438,7 +438,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
 
     protected List<String> getConfigValueCompletions(CommandSender sender, String key,
                                                      Object obj, String desc, String prefix) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         if (obj instanceof Enum<?>) {
             MiscUtil.alertMessage(sender, key + ":" + desc);
             for (Object o1 : obj.getClass().getEnumConstants()) {
@@ -459,7 +459,7 @@ public abstract class AbstractCommand implements Comparable<AbstractCommand> {
      * Represents a single command record: command plus subcommands. A command
      * object contains one or more of these records.
      */
-    class CommandRecord {
+    static class CommandRecord {
         private final String command;
         private final String[] subCommands;
 

@@ -19,7 +19,7 @@ public class ItemGrouping {
     private final Map<String, String> mapping;
 
     public ItemGrouping(ClickSortPlugin plugin) {
-        this.mapping = new HashMap<String, String>();
+        this.mapping = new HashMap<>();
         this.plugin = plugin;
 
         new JARUtil(plugin).extractResource(MAP_FILE, plugin.getDataFolder());

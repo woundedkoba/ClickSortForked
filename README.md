@@ -19,5 +19,5 @@ ClickSort by Des Herriott is licensed under the [Gnu GPL v3](http://www.gnu.org/
 
 #### Resources:  
 https://www.spigotmc.org/resources/clicksort.27021/  
-https://github.com/NewbieOrange/clicksort
+https://github.com/NewbieOrange/clicksort  
 https://dev.bukkit.org/projects/clicksort

@@ -8,6 +8,7 @@ Players can sort by item ID, item name, switch between single- and double-clicki
 ClickSortForked was created because Minecraft 1.20.5, 1.20.6, and 1.21 broke how ChengZi's ClickSort 1.6.1 was handling version control.  
 Starting with Minecraft 1.20.5 Java 21 is required. I assume this to be what caused the breaking issue.
 
+---------------------------------------------------------------------------------
 #### Changes
 See 'docs > Change Log.md' for Changes made in each version.
 

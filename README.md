@@ -9,10 +9,11 @@ ClickSortForked was created because Minecraft 1.20.5, 1.20.6, and 1.21 broke how
 Starting with Minecraft 1.20.5 Java 21 is required. I assume this to be what caused the breaking issue.
 
 #### Changes
-See docs > Change Log.md for Changes made in each version.
+See 'docs > Change Log.md' for Changes made in each version.
 
 #### Credit and Contribution
 desht (Original Author), ChengZi/NewbieOrange and all ClickSort git contributors: https://cutt.ly/4Y5HQmS
+I only take credit for having updated this forked plugin for MC 1.21 and other items listed in 'docs > Change Log.md'.
 
 #### License
 ClickSort by Des Herriott is licensed under the [Gnu GPL v3](http://www.gnu.org/licenses/gpl-3.0.html).

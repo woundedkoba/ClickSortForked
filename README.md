@@ -17,7 +17,8 @@ desht (Original Author), ChengZi/NewbieOrange and all ClickSort git contributors
 I only take credit for having updated this forked plugin for MC 1.21 and other items listed in 'docs > Change Log.md'.
 
 #### License:
-ClickSort by Des Herriott is licensed under the [Gnu GPL v3](http://www.gnu.org/licenses/gpl-3.0.html).
+ClickSort by Des Herriott is licensed under the [Gnu GPL v3](http://www.gnu.org/licenses/gpl-3.0.html).  
+ClickSortForked adhers to the same license.
 
 #### Resources:  
 https://www.spigotmc.org/resources/clicksort.27021/  
